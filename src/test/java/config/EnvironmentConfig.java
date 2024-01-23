@@ -7,7 +7,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class EnvironmentConfig {
 
-    private static final ISettingsFile SETTINGS_FILE = new JsonSettingsFile("environment.json");
+    private static final ISettingsFile SETTINGS_FILE = new JsonSettingsFile("welcome.json");
     public static String getUrl() {
         return SETTINGS_FILE.getValue("/url").toString();
     }
