@@ -15,12 +15,12 @@ import static aquality.selenium.browser.AqualityServices.getBrowser;
 public class VKApiAqualityTest {
     @Test
     public void testLoginAndNavigateToProfile() {
-        BrowserUtils.waitForPageLoad(EnvironmentConfig.getUrl(), By.xpath("//div[@class=\"IndexPageContent__content\"]"));
-        //getBrowser().goTo(EnvironmentConfig.getUrl());
+        //BrowserUtils.waitForPageLoad(EnvironmentConfig.getUrl(), By.xpath("//div[@class=\"IndexPageContent__content\"]"));
+        getBrowser().goTo(EnvironmentConfig.getUrl());
 
         LoginPage loginPage = new LoginPage();
         PasswordPage passwordPage = loginPage.enterPhoneEmail();
-        //passwordPage.enterPassword();
+        passwordPage.enterPassword();
 
     }
 }

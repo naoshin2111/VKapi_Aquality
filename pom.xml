@@ -16,11 +16,13 @@
 
     <dependencies>
 
+        <!-- https://mvnrepository.com/artifact/com.github.aquality-automation/aquality-selenium -->
         <dependency>
             <groupId>com.github.aquality-automation</groupId>
             <artifactId>aquality-selenium</artifactId>
-            <version>4.0.0</version>
+            <version>4.1.4</version>
         </dependency>
+
 
         <dependency>
             <groupId>org.testng</groupId>

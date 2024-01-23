@@ -6,7 +6,7 @@ import aquality.selenium.core.utilities.JsonSettingsFile;
 public class TestUserConfig {
 
     private static final ISettingsFile SETTINGS_FILE = new JsonSettingsFile("testUser.json");
-    public static String getUserPath() {
+    public static String getLogin() {
         return SETTINGS_FILE.getValue("/login").toString();
     }
 
