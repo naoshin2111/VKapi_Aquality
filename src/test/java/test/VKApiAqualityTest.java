@@ -36,9 +36,12 @@ public class VKApiAqualityTest {
         PostResponse postResponse = apiUtils.createPost(randomText);
         System.out.println(postResponse);
         Assert.assertNotNull(postResponse, "The API response for post creation is null");
-        //Assert.assertTrue(postId > 0, "The post ID should be greater than 0");
+        int postId = postResponse.getPost_id();
+        Assert.assertTrue(postId > 0, "The post ID should be greater than 0");
 
+        // Check for the presence of the post on the wall
 
-
+        boolean isPostPresent = myProfilePage.isPostPresentById(postId);
+        Assert.assertTrue(isPostPresent, "The post with the ID " + postId + " was not found on the profile wall.");
     }
 }

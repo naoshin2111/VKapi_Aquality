@@ -1,5 +1,7 @@
 package pages;
 
+import aquality.selenium.browser.AqualityServices;
+import aquality.selenium.elements.interfaces.ILabel;
 import aquality.selenium.elements.interfaces.ILink;
 import aquality.selenium.forms.Form;
 import constant.CommonConstants;
@@ -19,8 +21,15 @@ public class MyProfilePage extends Form {
     }
 
     public boolean isAt() {
-        // Implementation depends on what uniquely identifies the "My Profile" page.
-        // You may need to update the locator to a unique element on the "My Profile" page.
         return myProfileLink.state().isDisplayed();
+    }
+
+    public boolean isPostPresentById(int postId) {
+        String completeId = "wpt676687109_" + postId;
+        System.out.println(completeId);
+        By postSelector = By.id(completeId);
+
+        ILabel postLabel = getElementFactory().getLabel(postSelector, "Post with ID");
+        return postLabel.state().waitForDisplayed();
     }
 }
