@@ -24,11 +24,11 @@ public class VKApiUtils {
                 .queryParam("v", "5.131")
                 .queryParam("message", message)
                 .when()
-                .post("/wall.post").body().asString();
-//                .then()
-//                .statusCode(200)
-//                .extract()
-//                .response();
+                .post("/wall.post")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response().body().asString();
         System.out.println(response);
         JsonPath jsonPath = new JsonPath(response);
         int postId = jsonPath.getInt("response.post_id");
