@@ -1,6 +1,7 @@
 package test;
 
 import config.EnvironmentConfig;
+import config.TestDataConfig;
 import model.Post;
 import model.PostResponse;
 import org.testng.Assert;
@@ -39,9 +40,27 @@ public class VKApiAqualityTest {
         int postId = postResponse.getPost_id();
         Assert.assertTrue(postId > 0, "The post ID should be greater than 0");
 
-        // Check for the presence of the post on the wall
 
+        // Check for the presence of the post on the wall
         boolean isPostPresent = myProfilePage.isPostPresentById(postId);
         Assert.assertTrue(isPostPresent, "The post with the ID " + postId + " was not found on the profile wall.");
+
+
+        //Completed till step05
+
+
+        //Step06 - working on
+        // Get the upload server URL
+        String uploadUrl = apiUtils.getWallUploadServer();
+
+        // Upload the photo to the wall
+        String imagePath = TestDataConfig.getImagePath();
+        String attachment = apiUtils.uploadPhotoToWall(imagePath, uploadUrl);
+
+        // Edit the post with new text and the uploaded photo attachment
+        String newText = "Edited post text " + RandomUtils.generateRandomText(10);
+        boolean isEdited = apiUtils.editPostWithPhoto(postId, newText, attachment);
+        Assert.assertTrue(isEdited, "The post was not edited successfully.");
+
     }
 }

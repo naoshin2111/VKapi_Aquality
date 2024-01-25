@@ -7,6 +7,13 @@ public class PostResponse {
         return post_id;
     }
 
+    @Override
+    public String toString() {
+        return "PostResponse{" +
+                "post_id=" + post_id +
+                '}';
+    }
+
     public void setPost_id(int post_id) {
         this.post_id = post_id;
     }
