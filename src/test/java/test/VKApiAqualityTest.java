@@ -2,10 +2,7 @@ package test;
 
 import config.EnvironmentConfig;
 import config.TestDataConfig;
-import model.PhotoSave;
-import model.PhotoUploadServer;
-import model.PhotoUploadWall;
-import model.Post;
+import model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import pages.LoginPage;
@@ -77,6 +74,14 @@ public class VKApiAqualityTest {
         // Assert the photo is uploaded to the post using the photo ID obtained after saving the photo
         boolean isPhotoUploaded = myProfilePage.isPhotoPresentInPost(postId, photoSave.getPhotoId());
         Assert.assertTrue(isPhotoUploaded, "The photo was not uploaded to the post.");
+
+        // Create a comment on the post
+        String commentText = RandomUtils.generateRandomText(100);
+        Comment comment = apiUtils.addCommentToPost(post.getPostId(), commentText);
+        Assert.assertNotNull(comment, "The API response for comment creation is null");
+        Assert.assertTrue(comment.getCommentId() > 0, "The comment ID should be greater than 0");
+
+
 
     }
 }

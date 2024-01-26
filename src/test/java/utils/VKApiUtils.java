@@ -4,10 +4,8 @@ import config.ApiUrlConfig;
 import config.TestUserConfig;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import model.PhotoSave;
-import model.PhotoUploadServer;
-import model.PhotoUploadWall;
-import model.Post;
+import model.*;
+
 import java.io.File;
 import static io.restassured.RestAssured.given;
 
@@ -107,5 +105,24 @@ public class VKApiUtils {
 
         int id = editPostResponse.jsonPath().getInt("response.post_id");
         return new Post(id);
+    }
+
+    public Comment addCommentToPost(int postId, String message) {
+        Response response = given()
+                .contentType(ContentType.JSON)
+                .baseUri(apiBaseUrl)
+                .queryParam("access_token", accessToken)
+                .queryParam("v", "5.131")
+                .queryParam("post_id", postId)
+                .queryParam("message", message)
+                .when()
+                .post("/wall.createComment")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        int commentId = response.jsonPath().getInt("response.comment_id");
+        return new Comment(commentId);
     }
 }
