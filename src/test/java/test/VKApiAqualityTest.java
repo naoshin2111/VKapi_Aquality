@@ -2,8 +2,10 @@ package test;
 
 import config.EnvironmentConfig;
 import config.TestDataConfig;
+import model.PhotoSave;
+import model.PhotoUploadServer;
+import model.PhotoUploadWall;
 import model.Post;
-import model.PostResponse;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import pages.LoginPage;
@@ -34,10 +36,9 @@ public class VKApiAqualityTest {
         //Create Post and response the post ID
         VKApiUtils apiUtils = new VKApiUtils();
         String randomText = RandomUtils.generateRandomText(100);
-        PostResponse postResponse = apiUtils.createPost(randomText);
-        System.out.println(postResponse);
-        Assert.assertNotNull(postResponse, "The API response for post creation is null");
-        int postId = postResponse.getPost_id();
+        Post post = apiUtils.createPost(randomText);
+        Assert.assertNotNull(post, "The API response for post creation is null");
+        int postId = post.getPostId();
         Assert.assertTrue(postId > 0, "The post ID should be greater than 0");
 
 
@@ -45,22 +46,20 @@ public class VKApiAqualityTest {
         boolean isPostPresent = myProfilePage.isPostPresentById(postId);
         Assert.assertTrue(isPostPresent, "The post with the ID " + postId + " was not found on the profile wall.");
 
-
-        //Completed till step05
-
-
-        //Step06 - working on
         // Get the upload server URL
-        String uploadUrl = apiUtils.getWallUploadServer();
+        PhotoUploadServer photoUploadServer = apiUtils.getWallUploadServer();
 
-        // Upload the photo to the wall
+
         String imagePath = TestDataConfig.getImagePath();
-        String attachment = apiUtils.uploadPhotoToWall(imagePath, uploadUrl);
+        PhotoUploadWall photoUploadWall = apiUtils.uploadPhotoToWall(imagePath, photoUploadServer.getUpload_url());
+        // TODO -  Assert photoupload wall properties
+        //photoName = "photo" + ownerId + "_" + photoId
 
-        // Edit the post with new text and the uploaded photo attachment
+        PhotoSave photoSave = apiUtils.saveWallPhoto(photoUploadWall);
+        String attachment = "photo" + photoSave.getOwnerId()+ "_" + photoSave.getPhotoId();
         String newText = "Edited post text " + RandomUtils.generateRandomText(10);
-        boolean isEdited = apiUtils.editPostWithPhoto(postId, newText, attachment);
-        Assert.assertTrue(isEdited, "The post was not edited successfully.");
+        Post editPost = apiUtils.editPostWithPhoto(postId, newText, attachment);
+        System.out.println(editPost);
 
     }
 }

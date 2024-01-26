@@ -26,7 +26,6 @@ public class MyProfilePage extends Form {
 
     public boolean isPostPresentById(int postId) {
         String completeId = "wpt676687109_" + postId;
-        System.out.println(completeId);
         By postSelector = By.id(completeId);
 
         ILabel postLabel = getElementFactory().getLabel(postSelector, "Post with ID");
