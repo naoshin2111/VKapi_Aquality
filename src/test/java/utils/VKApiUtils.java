@@ -84,8 +84,10 @@ public class VKApiUtils {
                 .response();
 
         String photoId = savePhotoResponse.jsonPath().getString("response[0].id");
+        System.out.println(photoId);
         String ownerId = savePhotoResponse.jsonPath().getString("response[0].owner_id");
 
+        System.out.println(savePhotoResponse.getBody().asString());
         return new PhotoSave(photoId, ownerId);
     }
 

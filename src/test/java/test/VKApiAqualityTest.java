@@ -52,14 +52,31 @@ public class VKApiAqualityTest {
 
         String imagePath = TestDataConfig.getImagePath();
         PhotoUploadWall photoUploadWall = apiUtils.uploadPhotoToWall(imagePath, photoUploadServer.getUpload_url());
-        // TODO -  Assert photoupload wall properties
+        // TODO -  Assert photo upload wall properties
         //photoName = "photo" + ownerId + "_" + photoId
 
         PhotoSave photoSave = apiUtils.saveWallPhoto(photoUploadWall);
         String attachment = "photo" + photoSave.getOwnerId()+ "_" + photoSave.getPhotoId();
         String newText = "Edited post text " + RandomUtils.generateRandomText(10);
         Post editPost = apiUtils.editPostWithPhoto(postId, newText, attachment);
-        System.out.println(editPost);
+        // TODO -  Assert postEdit wall properties
+
+        // Check if the edited post text appears on the page
+        //Assert.assertEquals(myProfilePage.getPostTextEdited(postId), newText, "The post text was not updated on the page.");
+
+        boolean isEditedTextPresent = myProfilePage.getPostTextEdited(newText);
+        Assert.assertTrue(isEditedTextPresent, "The edited post text '" + newText + "' was not found on the page.");
+
+        // Check if the uploaded photo appears on the page
+        //Assert.assertTrue(myProfilePage.isPhotoPresentInPost(postId, photoSave.getPhotoId()), "The photo was not attached to the post on the page.");
+
+        // Assert the photo is uploaded to the post
+//        boolean isPhotoUploaded = myProfilePage.isPhotoUploadedToPost(postId);
+//        Assert.assertTrue(isPhotoUploaded, "The photo was not uploaded to the post.");
+
+        // Assert the photo is uploaded to the post using the photo ID obtained after saving the photo
+        boolean isPhotoUploaded = myProfilePage.isPhotoPresentInPost(postId, photoSave.getPhotoId());
+        Assert.assertTrue(isPhotoUploaded, "The photo was not uploaded to the post.");
 
     }
 }
