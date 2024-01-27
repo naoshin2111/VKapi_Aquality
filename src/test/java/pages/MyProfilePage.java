@@ -52,7 +52,6 @@ public class MyProfilePage extends Form {
 
     public boolean showNextComment(String ownerId, int postId) {
         String showNextCommentXPath = String.format("//div[contains(@id, 'replies%s_%d')]//span[contains(@class, 'js-replies_next_label')]", ownerId, postId);
-        System.out.println(showNextCommentXPath);
         By showNextCommentLocator = By.xpath(showNextCommentXPath);
         ILink showNextCommentButton = getElementFactory().getLink(showNextCommentLocator, "Show Next Comment");
         showNextCommentButton.state().waitForDisplayed();
@@ -73,9 +72,9 @@ public class MyProfilePage extends Form {
         return commentLabel.state().waitForDisplayed();
     }
 
-    public void likePost(int postId) {
-        String likeButtonSelector = String.format("div[id='post%d'] .PostBottomAction__like", postId);
-        IButton likeButton = getElementFactory().getButton(By.cssSelector(likeButtonSelector), "Like Button");
+    public void likePost(String ownerId, int postId) {
+        String likeButtonXPath = String.format("//div[@class='like_wrap _like_wall%s_%d ']//div[@class='PostButtonReactions__icon ']//*[name()='svg']", ownerId, postId);
+        IButton likeButton = getElementFactory().getButton(By.xpath(likeButtonXPath), "Like Button");
         if (likeButton.state().isDisplayed()) {
             likeButton.click();
         } else {

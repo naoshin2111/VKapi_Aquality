@@ -7,6 +7,8 @@ import io.restassured.response.Response;
 import model.*;
 
 import java.io.File;
+import java.util.List;
+
 import static io.restassured.RestAssured.given;
 
 public class VKApiUtils {
@@ -122,6 +124,28 @@ public class VKApiUtils {
 
         int commentId = response.jsonPath().getInt("response.comment_id");
         return new Comment(commentId);
+    }
+
+    public LikeResponse getLikesForPost(String ownerId, int postId) {
+        Response response = given()
+                .contentType(ContentType.JSON)
+                .baseUri(apiBaseUrl)
+                .queryParam("access_token", accessToken)
+                .queryParam("v", "5.131")
+                .queryParam("type", "post")
+                .queryParam("owner_id", ownerId)
+                .queryParam("item_id", postId)
+                .get("/likes.getList")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        int count = response.jsonPath().getInt("response.count");
+        List<Integer> users = response.jsonPath().getList("response.users", Integer.class);
+        System.out.println(users);
+
+        return new LikeResponse(count, users);
     }
 
     public DeleteResponse deletePost(int postId) {

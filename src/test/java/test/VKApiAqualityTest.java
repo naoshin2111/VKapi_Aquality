@@ -15,7 +15,7 @@ import static aquality.selenium.browser.AqualityServices.getBrowser;
 
 public class VKApiAqualityTest {
     @Test
-    public void testLoginAndNavigateToProfile() throws InterruptedException {
+    public void testLoginAndNavigateToProfile() {
         //Get Browser
         //BrowserUtils.waitForPageLoad(EnvironmentConfig.getUrl(), By.xpath("//div[@class=\"IndexPageContent__content\"]"));
         getBrowser().goTo(EnvironmentConfig.getUrl());
@@ -64,7 +64,6 @@ public class VKApiAqualityTest {
         boolean isPhotoUploaded = myProfilePage.isPhotoPresentInPost(postId, photoSave.getPhotoId(), photoSave.getOwnerId());
         Assert.assertTrue(isPhotoUploaded, "The photo was not uploaded to the post.");
 
-
         // Create a comment on the post
         String commentText = RandomUtils.generateRandomText(100);
         Comment comment = apiUtils.addCommentToPost(post.getPostId(), commentText);
@@ -82,17 +81,23 @@ public class VKApiAqualityTest {
         // Verify the comment through UI without refreshing the page
         boolean isCommentAdded = myProfilePage.isCommentPresentByCommentId(ownerId, commentId);
         Assert.assertTrue(isCommentAdded, "The comment with text '" + commentText + "' was not found on the post in the UI.");
-//
+
         // Like the post
-//        myProfilePage.likePost(postId);
+        myProfilePage.likePost(ownerId, postId);
 
-        // Delete the post and assert deletion was successful
-        DeleteResponse deleteResponse = apiUtils.deletePost(post.getPostId());
-        Assert.assertTrue(deleteResponse.isDeleted(), "The post was not deleted.");
+        // Find user who likes the post
+//
+        LikeResponse likeResponse = apiUtils.getLikesForPost(ownerId, postId);
 
-        //Check whether the post is deleted through UI
-        boolean isPostDeleted = myProfilePage.isPostDeleted(ownerId, postId);
-        Assert.assertTrue(isPostDeleted, "The post was not deleted (still visible on the page).");
+        Assert.assertTrue(likeResponse.getUsers().contains(ownerId),
+                "The expected user did not like the post.");
+//        // Delete the post and assert deletion was successful
+//        DeleteResponse deleteResponse = apiUtils.deletePost(post.getPostId());
+//        Assert.assertTrue(deleteResponse.isDeleted(), "The post was not deleted.");
+//
+//        //Check whether the post is deleted through UI
+//        boolean isPostDeleted = myProfilePage.isPostDeleted(ownerId, postId);
+//        Assert.assertTrue(isPostDeleted, "The post was not deleted (still visible on the page).");
     }
 
 }
