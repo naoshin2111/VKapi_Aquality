@@ -1,9 +1,14 @@
 package pages;
 
+import aquality.selenium.elements.interfaces.IButton;
 import aquality.selenium.elements.interfaces.ILabel;
 import aquality.selenium.elements.interfaces.ILink;
 import aquality.selenium.forms.Form;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.TimeoutException;
+
+import java.time.Duration;
 
 public class MyProfilePage extends Form {
 
@@ -23,55 +28,70 @@ public class MyProfilePage extends Form {
     }
 
     public boolean isPostPresentById(int postId) {
-        String completeId = "wpt676687109_" + postId;
-        By postSelector = By.id(completeId);
 
+        String postXPath = String.format("//div[contains(@id, 'wpt676687109_%d')]", postId);
+        By postSelector = By.xpath(postXPath);
         ILabel postLabel = getElementFactory().getLabel(postSelector, "Post with ID");
+
         return postLabel.state().waitForDisplayed();
     }
 
-    public String getPostTextEdited(int postId) {
-        // The ID selector does not require a dot at the start, unlike class selectors
-        String postTextSelector = "wpt676687109_" + postId;
-        // Create a label element for the post text
-        ILabel postTextLabel = getElementFactory().getLabel(By.id(postTextSelector), "Post Text");
-
-        // Wait for the text element to be displayed
-        if (postTextLabel.state().waitForDisplayed()) {
-            return postTextLabel.getText();
-        } else {
-            throw new IllegalStateException("The post text element is not displayed.");
-        }
-    }
-
     public boolean getPostTextEdited(String editedText) {
-        // Using XPath to find the element that contains the text
         By textLocator = By.xpath("//div[contains(text(),'" + editedText + "')]");
         ILabel postTextLabel = getElementFactory().getLabel(textLocator, "Post Text");
 
-        // Wait for the text element to be displayed and return the result
         return postTextLabel.state().waitForDisplayed();
     }
 
-//    public boolean isPhotoPresentInPost(int postId, String photoId) {
-//        // Adjust the selector to correctly target the image in the post
-//        String photoSelector = "div[id='post" + postId + "'] img[src*='" + photoId + "']";
-//        System.out.println(photoSelector);
-//        ILabel photoElement = getElementFactory().getLabel(By.cssSelector(photoSelector), "Post Photo");
-//        return photoElement.state().waitForDisplayed();
-//    }
-
-    public boolean isPhotoPresentInPost(int postId, String photoId) {
-        // The photoId is a part of the img src attribute within the post with the given ID.
-        // Use contains() function in XPath to match the photoId substring within the src attribute.
-         String photoXPath = "//div[@id='wpt676687109_1506']//img[@class='PhotoPrimaryAttachment__imageElement']";
-        //TODO Change the locator to dynamic value
-        //String photoXPath = String.format("//div[@id='wpt676687109_%d']//img[contains(@class, 'PhotoPrimaryAttachment__imageElement')]", postId);
-
-        System.out.println(photoXPath);
+    public boolean isPhotoPresentInPost(int postId, String photoId, String ownerId) {
+        String photoXPath = String.format("//div[contains(@id,'wpt%s_%d')]//a[contains(@href,'%s')]", ownerId, postId, photoId);
         ILabel photoElement = getElementFactory().getLabel(By.xpath(photoXPath), "Post Photo");
 
-        // Wait for the image element to be displayed and return the result
         return photoElement.state().waitForDisplayed();
+    }
+
+    public boolean showNextComment(String ownerId, int postId) {
+        String showNextCommentXPath = String.format("//div[contains(@id, 'replies%s_%d')]//span[contains(@class, 'js-replies_next_label')]", ownerId, postId);
+        System.out.println(showNextCommentXPath);
+        By showNextCommentLocator = By.xpath(showNextCommentXPath);
+        ILink showNextCommentButton = getElementFactory().getLink(showNextCommentLocator, "Show Next Comment");
+        showNextCommentButton.state().waitForDisplayed();
+
+        if (showNextCommentButton.state().isClickable()) {
+            showNextCommentButton.click();
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isCommentPresentByCommentId(String ownerId, int commentId) {
+        String commentXPath = String.format("//div[contains(@id, 'post%s_%d')]", ownerId, commentId);
+        ILabel commentLabel = getElementFactory().getLabel(By.xpath(commentXPath), "Comment Text");
+
+        return commentLabel.state().waitForDisplayed();
+    }
+
+    public void likePost(int postId) {
+        String likeButtonSelector = String.format("div[id='post%d'] .PostBottomAction__like", postId);
+        IButton likeButton = getElementFactory().getButton(By.cssSelector(likeButtonSelector), "Like Button");
+        if (likeButton.state().isDisplayed()) {
+            likeButton.click();
+        } else {
+            throw new IllegalStateException("Like button for post with ID " + postId + " is not displayed.");
+        }
+    }
+
+    public boolean isPostDeleted(String ownerId, int postId) {
+        String postXPath = String.format("//div[contains(@id, 'wpt%s_%d')]", ownerId, postId);
+        By postSelector = By.xpath(postXPath);
+
+        try {
+            ILabel postLabel = getElementFactory().getLabel(postSelector, "Post with ID");
+            return !postLabel.state().waitForDisplayed(Duration.ofSeconds(5));
+        } catch (NoSuchElementException | TimeoutException e) {
+            return true;
+        }
     }
 }

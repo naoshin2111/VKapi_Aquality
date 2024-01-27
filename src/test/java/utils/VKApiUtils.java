@@ -82,10 +82,8 @@ public class VKApiUtils {
                 .response();
 
         String photoId = savePhotoResponse.jsonPath().getString("response[0].id");
-        System.out.println(photoId);
         String ownerId = savePhotoResponse.jsonPath().getString("response[0].owner_id");
 
-        System.out.println(savePhotoResponse.getBody().asString());
         return new PhotoSave(photoId, ownerId);
     }
 
@@ -124,5 +122,23 @@ public class VKApiUtils {
 
         int commentId = response.jsonPath().getInt("response.comment_id");
         return new Comment(commentId);
+    }
+
+    public DeleteResponse deletePost(int postId) {
+        Response response = given()
+                .contentType(ContentType.JSON)
+                .baseUri(apiBaseUrl)
+                .queryParam("access_token", accessToken)
+                .queryParam("v", "5.131")
+                .queryParam("post_id", postId)
+                .when()
+                .post("/wall.delete")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        boolean isDeleted = response.jsonPath().getInt("response") == 1;
+        return new DeleteResponse(isDeleted);
     }
 }

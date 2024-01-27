@@ -15,7 +15,7 @@ import static aquality.selenium.browser.AqualityServices.getBrowser;
 
 public class VKApiAqualityTest {
     @Test
-    public void testLoginAndNavigateToProfile() {
+    public void testLoginAndNavigateToProfile() throws InterruptedException {
         //Get Browser
         //BrowserUtils.waitForPageLoad(EnvironmentConfig.getUrl(), By.xpath("//div[@class=\"IndexPageContent__content\"]"));
         getBrowser().goTo(EnvironmentConfig.getUrl());
@@ -51,6 +51,7 @@ public class VKApiAqualityTest {
 
         PhotoSave photoSave = apiUtils.saveWallPhoto(photoUploadWall);
         String attachment = "photo" + photoSave.getOwnerId()+ "_" + photoSave.getPhotoId();
+        System.out.println(attachment);
         String newText = "Edited post text " + RandomUtils.generateRandomText(10);
         Post editPost = apiUtils.editPostWithPhoto(postId, newText, attachment);
         // TODO -  Assert postEdit wall properties
@@ -59,17 +60,39 @@ public class VKApiAqualityTest {
         boolean isEditedTextPresent = myProfilePage.getPostTextEdited(newText);
         Assert.assertTrue(isEditedTextPresent, "The edited post text '" + newText + "' was not found on the page.");
 
-
         // Assert the photo is uploaded to the post using the photo ID obtained after saving the photo
-        boolean isPhotoUploaded = myProfilePage.isPhotoPresentInPost(postId, photoSave.getPhotoId());
+        boolean isPhotoUploaded = myProfilePage.isPhotoPresentInPost(postId, photoSave.getPhotoId(), photoSave.getOwnerId());
         Assert.assertTrue(isPhotoUploaded, "The photo was not uploaded to the post.");
+
 
         // Create a comment on the post
         String commentText = RandomUtils.generateRandomText(100);
         Comment comment = apiUtils.addCommentToPost(post.getPostId(), commentText);
         Assert.assertNotNull(comment, "The API response for comment creation is null");
-        Assert.assertTrue(comment.getCommentId() > 0, "The comment ID should be greater than 0");
 
+        int commentId = comment.getCommentId();
+        Assert.assertTrue(commentId > 0, "The comment ID should be greater than 0");
 
+        String ownerId = photoSave.getOwnerId();
+
+        //Click on "Show new comment"
+        boolean isShowCommentButtonClicked = myProfilePage.showNextComment(ownerId, postId);
+        Assert.assertTrue(isShowCommentButtonClicked, "Failed to click 'Show next comment' button.");
+
+        // Verify the comment through UI without refreshing the page
+        boolean isCommentAdded = myProfilePage.isCommentPresentByCommentId(ownerId, commentId);
+        Assert.assertTrue(isCommentAdded, "The comment with text '" + commentText + "' was not found on the post in the UI.");
+//
+        // Like the post
+//        myProfilePage.likePost(postId);
+
+//        // Delete the post and assert deletion was successful
+//        DeleteResponse deleteResponse = apiUtils.deletePost(post.getPostId());
+//        Assert.assertTrue(deleteResponse.isDeleted(), "The post was not deleted.");
+//
+//        //Check whether the post is deleted through UI
+//        boolean isPostDeleted = myProfilePage.isPostDeleted(ownerId, postId);
+//        Assert.assertTrue(isPostDeleted, "The post was not deleted (still visible on the page).");
     }
+
 }
