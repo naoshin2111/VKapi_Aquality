@@ -86,13 +86,13 @@ public class VKApiAqualityTest {
         // Like the post
 //        myProfilePage.likePost(postId);
 
-//        // Delete the post and assert deletion was successful
-//        DeleteResponse deleteResponse = apiUtils.deletePost(post.getPostId());
-//        Assert.assertTrue(deleteResponse.isDeleted(), "The post was not deleted.");
-//
-//        //Check whether the post is deleted through UI
-//        boolean isPostDeleted = myProfilePage.isPostDeleted(ownerId, postId);
-//        Assert.assertTrue(isPostDeleted, "The post was not deleted (still visible on the page).");
+        // Delete the post and assert deletion was successful
+        DeleteResponse deleteResponse = apiUtils.deletePost(post.getPostId());
+        Assert.assertTrue(deleteResponse.isDeleted(), "The post was not deleted.");
+
+        //Check whether the post is deleted through UI
+        boolean isPostDeleted = myProfilePage.isPostDeleted(ownerId, postId);
+        Assert.assertTrue(isPostDeleted, "The post was not deleted (still visible on the page).");
     }
 
 }
