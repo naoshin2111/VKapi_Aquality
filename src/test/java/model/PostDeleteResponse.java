@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class LikeCheckResponse {
-    private int liked;
-    private int copied;
+public class PostDeleteResponse {
+
+    private boolean deleted;
 }

@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class PhotoUploadWall {
+public class PhotoWallResponse {
 
     private String server;
     private String photo;

@@ -2,54 +2,53 @@ package utils;
 
 import config.ApiUrlConfig;
 import config.TestUserConfig;
+import constant.EndPoints;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import model.*;
 import java.io.File;
-
 import static io.restassured.RestAssured.given;
 
 public class VKApiUtils {
 
-    private final String accessToken = TestUserConfig.getToken();
-    private final String apiBaseUrl = ApiUrlConfig.getApiUrl();
+    private final String ACCESS_TOKEN = TestUserConfig.getToken();
+    private final String API_BASE_URL = ApiUrlConfig.getApiUrl();
 
-    public Post createPost(String message) {
-
+    public PostResponse createPost(String message) {
         Response response = given()
                 .contentType(ContentType.JSON)
-                .baseUri(apiBaseUrl)
-                .queryParam("access_token", accessToken)
+                .baseUri(API_BASE_URL)
+                .queryParam("access_token", ACCESS_TOKEN)
                 .queryParam("v", "5.131")
                 .queryParam("message", message)
                 .when()
-                .post("/wall.post")
+                .post(EndPoints.WALL_POST)
                 .then()
                 .statusCode(200)
                 .extract()
                 .response();
 
         int postId = response.jsonPath().getInt("response.post_id");
-        return new Post(postId);
+        return new PostResponse(postId);
     }
 
-    public PhotoUploadServer getWallUploadServer() {
+    public PhotoServerResponse uploadPhotoToServer() {
         Response uploadServerResponse = given()
                 .contentType(ContentType.JSON)
-                .baseUri(apiBaseUrl)
-                .queryParam("access_token", accessToken)
+                .baseUri(API_BASE_URL)
+                .queryParam("access_token", ACCESS_TOKEN)
                 .queryParam("v", "5.131")
-                .get("/photos.getWallUploadServer")
+                .get(EndPoints.PHOTOS_GET_WALL_UPLOAD_SERVER)
                 .then()
                 .statusCode(200)
                 .extract()
                 .response();
 
         String uploadUrl = uploadServerResponse.jsonPath().getString("response.upload_url");
-        return new PhotoUploadServer(uploadUrl);
+        return new PhotoServerResponse(uploadUrl);
     }
 
-    public PhotoUploadWall uploadPhotoToWall(String imagePath, String uploadUrl) {
+    public PhotoWallResponse uploadPhotoToWall(String imagePath, String uploadUrl) {
         Response uploadedPhotoResponse = given()
                 .multiPart("photo", new File(imagePath))
                 .when()
@@ -63,19 +62,18 @@ public class VKApiUtils {
         String server = uploadedPhotoResponse.jsonPath().getString("server");
         String photo = uploadedPhotoResponse.jsonPath().getString("photo");
         String hash = uploadedPhotoResponse.jsonPath().getString("hash");
-
-        return new PhotoUploadWall(server, photo, hash);
+        return new PhotoWallResponse(server, photo, hash);
     }
 
-    public PhotoSave saveWallPhoto(PhotoUploadWall photoUploadWall) {
+    public PhotoSaveRespnse savePhotoToWall(PhotoWallResponse PhotoWallResponse) {
         Response savePhotoResponse = given()
-                .baseUri(apiBaseUrl)
-                .queryParam("access_token", accessToken)
+                .baseUri(API_BASE_URL)
+                .queryParam("access_token", ACCESS_TOKEN)
                 .queryParam("v", "5.131")
-                .queryParam("server", photoUploadWall.getServer())
-                .queryParam("photo", photoUploadWall.getPhoto())
-                .queryParam("hash", photoUploadWall.getHash())
-                .post("/photos.saveWallPhoto")
+                .queryParam("server", PhotoWallResponse.getServer())
+                .queryParam("photo", PhotoWallResponse.getPhoto())
+                .queryParam("hash", PhotoWallResponse.getHash())
+                .post(EndPoints.PHOTOS_SAVE_WALL_PHOTO)
                 .then()
                 .statusCode(200)
                 .extract()
@@ -83,58 +81,57 @@ public class VKApiUtils {
 
         String photoId = savePhotoResponse.jsonPath().getString("response[0].id");
         String ownerId = savePhotoResponse.jsonPath().getString("response[0].owner_id");
-
-        return new PhotoSave(photoId, ownerId);
+        return new PhotoSaveRespnse(photoId, ownerId);
     }
 
-    public Post editPostWithPhoto(int postId, String newText, String attachment) {
+    public PostResponse editPostWithPhoto(int postId, String newText, String attachment) {
         Response editPostResponse = given()
-                .baseUri(apiBaseUrl)
-                .queryParam("access_token", accessToken)
+                .baseUri(API_BASE_URL)
+                .queryParam("access_token", ACCESS_TOKEN)
                 .queryParam("v", "5.131")
                 .queryParam("post_id", postId)
                 .queryParam("message", newText)
                 .queryParam("attachments", attachment)
-                .post("/wall.edit")
+                .post(EndPoints.WALL_EDIT)
                 .then()
                 .statusCode(200)
                 .extract()
                 .response();
 
         int id = editPostResponse.jsonPath().getInt("response.post_id");
-        return new Post(id);
+        return new PostResponse(id);
     }
 
-    public Comment addCommentToPost(int postId, String message) {
+    public CommentResponse addCommentToPost(int postId, String message) {
         Response response = given()
                 .contentType(ContentType.JSON)
-                .baseUri(apiBaseUrl)
-                .queryParam("access_token", accessToken)
+                .baseUri(API_BASE_URL)
+                .queryParam("access_token", ACCESS_TOKEN)
                 .queryParam("v", "5.131")
                 .queryParam("post_id", postId)
                 .queryParam("message", message)
                 .when()
-                .post("/wall.createComment")
+                .post(EndPoints.WALL_CREATE_COMMENT)
                 .then()
                 .statusCode(200)
                 .extract()
                 .response();
 
         int commentId = response.jsonPath().getInt("response.comment_id");
-        return new Comment(commentId);
+        return new CommentResponse(commentId);
     }
 
-    public LikeCheckResponse isLikedByOwner(String ownerId, String type, int itemId) {
+    public LikeResponse checkLikedByUser(String ownerId, String type, int itemId) {
         Response response = given()
                 .contentType(ContentType.JSON)
-                .baseUri(apiBaseUrl)
-                .queryParam("access_token", accessToken)
+                .baseUri(API_BASE_URL)
+                .queryParam("access_token", ACCESS_TOKEN)
                 .queryParam("v", "5.131")
-                .queryParam("user_id", ownerId) // Assuming the owner has liked the post
+                .queryParam("user_id", ownerId)
                 .queryParam("type", type)
                 .queryParam("owner_id", ownerId)
                 .queryParam("item_id", itemId)
-                .get("/likes.isLiked")
+                .get(EndPoints.LIKES_IS_LIKED)
                 .then()
                 .statusCode(200)
                 .extract()
@@ -142,25 +139,24 @@ public class VKApiUtils {
 
         int liked = response.jsonPath().getInt("response.liked");
         int copied = response.jsonPath().getInt("response.copied");
-
-        return new LikeCheckResponse(liked, copied);
+        return new LikeResponse(liked, copied);
     }
 
-    public DeleteResponse deletePost(int postId) {
+    public PostDeleteResponse deletePost(int postId) {
         Response response = given()
                 .contentType(ContentType.JSON)
-                .baseUri(apiBaseUrl)
-                .queryParam("access_token", accessToken)
+                .baseUri(API_BASE_URL)
+                .queryParam("access_token", ACCESS_TOKEN)
                 .queryParam("v", "5.131")
                 .queryParam("post_id", postId)
                 .when()
-                .post("/wall.delete")
+                .post(EndPoints.WALL_DELETE)
                 .then()
                 .statusCode(200)
                 .extract()
                 .response();
 
         boolean isDeleted = response.jsonPath().getInt("response") == 1;
-        return new DeleteResponse(isDeleted);
+        return new PostDeleteResponse(isDeleted);
     }
 }

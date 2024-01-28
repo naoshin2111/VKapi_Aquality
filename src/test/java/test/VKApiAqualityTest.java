@@ -10,20 +10,19 @@ import pages.MyProfilePage;
 import pages.PasswordPage;
 import utils.RandomUtils;
 import utils.VKApiUtils;
-
 import static aquality.selenium.browser.AqualityServices.getBrowser;
 
-public class VKApiAqualityTest {
+public class VKApiAqualityTest extends BaseTest{
     @Test
     public void testLoginAndNavigateToProfile() {
-        //Get Browser
-        //BrowserUtils.waitForPageLoad(EnvironmentConfig.getUrl(), By.xpath("//div[@class=\"IndexPageContent__content\"]"));
         getBrowser().goTo(EnvironmentConfig.getUrl());
+        //TODO Add an assertion
 
         //Authorize Login
         LoginPage loginPage = new LoginPage();
         PasswordPage passwordPage = loginPage.enterPhoneEmail();
         passwordPage.enterPassword();
+        //TODO Add a "Soft Assert"
 
         //Go to My Profile Page
         MyProfilePage myProfilePage = new MyProfilePage();
@@ -33,9 +32,9 @@ public class VKApiAqualityTest {
         //Create Post and response the post ID
         VKApiUtils apiUtils = new VKApiUtils();
         String randomText = RandomUtils.generateRandomText(100);
-        Post post = apiUtils.createPost(randomText);
-        Assert.assertNotNull(post, "The API response for post creation is null");
-        int postId = post.getPostId();
+        PostResponse postResponse = apiUtils.createPost(randomText);
+        Assert.assertNotNull(postResponse, "The API response for post creation is null");
+        int postId = postResponse.getPostId();
         Assert.assertTrue(postId > 0, "The post ID should be greater than 0");
 
         // Check for the presence of the post on the wall
@@ -43,17 +42,17 @@ public class VKApiAqualityTest {
         Assert.assertTrue(isPostPresent, "The post with the ID " + postId + " was not found on the profile wall.");
 
         // Get the upload server URL
-        PhotoUploadServer photoUploadServer = apiUtils.getWallUploadServer();
+        PhotoServerResponse PhotoServerResponse = apiUtils.uploadPhotoToServer();
 
         String imagePath = TestDataConfig.getImagePath();
-        PhotoUploadWall photoUploadWall = apiUtils.uploadPhotoToWall(imagePath, photoUploadServer.getUpload_url());
+        PhotoWallResponse PhotoWallResponse = apiUtils.uploadPhotoToWall(imagePath, PhotoServerResponse.getUpload_url());
         // TODO -  Assert photo upload wall properties
 
-        PhotoSave photoSave = apiUtils.saveWallPhoto(photoUploadWall);
-        String attachment = "photo" + photoSave.getOwnerId()+ "_" + photoSave.getPhotoId();
+        PhotoSaveRespnse photoSaveRespnse = apiUtils.savePhotoToWall(PhotoWallResponse);
+        String attachment = "photo" + photoSaveRespnse.getOwnerId()+ "_" + photoSaveRespnse.getPhotoId();
         System.out.println(attachment);
         String newText = "Edited post text " + RandomUtils.generateRandomText(10);
-        Post editPost = apiUtils.editPostWithPhoto(postId, newText, attachment);
+        PostResponse editPostResponse = apiUtils.editPostWithPhoto(postId, newText, attachment);
         // TODO -  Assert postEdit wall properties
 
         // Check if the edited post text appears on the page
@@ -61,18 +60,18 @@ public class VKApiAqualityTest {
         Assert.assertTrue(isEditedTextPresent, "The edited post text '" + newText + "' was not found on the page.");
 
         // Assert the photo is uploaded to the post using the photo ID obtained after saving the photo
-        boolean isPhotoUploaded = myProfilePage.isPhotoPresentInPost(postId, photoSave.getPhotoId(), photoSave.getOwnerId());
+        boolean isPhotoUploaded = myProfilePage.isPhotoPresentInPost(postId, photoSaveRespnse.getPhotoId(), photoSaveRespnse.getOwnerId());
         Assert.assertTrue(isPhotoUploaded, "The photo was not uploaded to the post.");
 
         // Create a comment on the post
         String commentText = RandomUtils.generateRandomText(100);
-        Comment comment = apiUtils.addCommentToPost(post.getPostId(), commentText);
-        Assert.assertNotNull(comment, "The API response for comment creation is null");
+        CommentResponse commentResponse = apiUtils.addCommentToPost(postResponse.getPostId(), commentText);
+        Assert.assertNotNull(commentResponse, "The API response for comment creation is null");
 
-        int commentId = comment.getCommentId();
+        int commentId = commentResponse.getCommentId();
         Assert.assertTrue(commentId > 0, "The comment ID should be greater than 0");
 
-        String ownerId = photoSave.getOwnerId();
+        String ownerId = photoSaveRespnse.getOwnerId();
 
         //Click on "Show new comment"
         boolean isShowCommentButtonClicked = myProfilePage.showNextComment(ownerId, postId);
@@ -86,12 +85,12 @@ public class VKApiAqualityTest {
         myProfilePage.likePost(ownerId, postId);
 
         // Find user who likes the post
-        LikeCheckResponse likeCheckResponse = apiUtils.isLikedByOwner(ownerId, "post", postId);
-        Assert.assertEquals(likeCheckResponse.getLiked(), 1, "The owner did not like their own post.");
+        LikeResponse LikeResponse = apiUtils.checkLikedByUser(ownerId, "post", postId);
+        Assert.assertEquals(LikeResponse.getLiked(), 1, "The owner did not like their own post.");
 
         //Delete the post and assert deletion was successful
-        DeleteResponse deleteResponse = apiUtils.deletePost(post.getPostId());
-        Assert.assertTrue(deleteResponse.isDeleted(), "The post was not deleted.");
+        PostDeleteResponse postDeleteResponse = apiUtils.deletePost(postResponse.getPostId());
+        Assert.assertTrue(postDeleteResponse.isDeleted(), "The post was not deleted.");
 
         //Check whether the post is deleted through UI
         boolean isPostDeleted = myProfilePage.isPostDeleted(ownerId, postId);

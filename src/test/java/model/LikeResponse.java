@@ -5,8 +5,8 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class PhotoSave {
+public class LikeResponse {
 
-    private String photoId;
-    private String ownerId;
+    private int liked;
+    private int copied;
 }

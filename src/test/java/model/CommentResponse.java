@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class DeleteResponse {
-    private boolean deleted;
+public class CommentResponse {
+
+    private int commentId;
 }

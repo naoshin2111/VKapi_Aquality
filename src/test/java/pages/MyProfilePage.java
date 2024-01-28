@@ -5,30 +5,26 @@ import aquality.selenium.elements.interfaces.ILabel;
 import aquality.selenium.elements.interfaces.ILink;
 import aquality.selenium.forms.Form;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.TimeoutException;
-
 import java.time.Duration;
 
 public class MyProfilePage extends Form {
 
-    private final ILink myProfileLink = getElementFactory().getLink(By.cssSelector("li[id='l_pr'] a[class='LeftMenuItem-module__item--XMcN9']"), "My Profile");
+    private final ILink MY_PROFILE_LINK = getElementFactory().getLink(By.xpath("//span[contains(text(),'My profile')]"), "My Profile");
 
     public MyProfilePage() {
         super(By.id("main_feed"), "My Profile Page");
     }
 
     public void openMyProfile() {
-        myProfileLink.state().waitForDisplayed();
-        myProfileLink.click();
+        MY_PROFILE_LINK.state().waitForDisplayed();
+        MY_PROFILE_LINK.click();
     }
 
     public boolean isAt() {
-        return myProfileLink.state().isDisplayed();
+        return MY_PROFILE_LINK.state().isDisplayed();
     }
 
     public boolean isPostPresentById(int postId) {
-
         String postXPath = String.format("//div[contains(@id, 'wpt676687109_%d')]", postId);
         By postSelector = By.xpath(postXPath);
         ILabel postLabel = getElementFactory().getLabel(postSelector, "Post with ID");
@@ -75,22 +71,16 @@ public class MyProfilePage extends Form {
     public void likePost(String ownerId, int postId) {
         String likeButtonXPath = String.format("//div[@class='like_wrap _like_wall%s_%d ']//div[@class='PostButtonReactions__icon ']//*[name()='svg']", ownerId, postId);
         IButton likeButton = getElementFactory().getButton(By.xpath(likeButtonXPath), "Like Button");
-        if (likeButton.state().isDisplayed()) {
-            likeButton.click();
-        } else {
-            throw new IllegalStateException("Like button for post with ID " + postId + " is not displayed.");
-        }
+
+        likeButton.state().isDisplayed();
+        likeButton.click();
     }
 
     public boolean isPostDeleted(String ownerId, int postId) {
         String postXPath = String.format("//div[contains(@id, 'wpt%s_%d')]", ownerId, postId);
         By postSelector = By.xpath(postXPath);
 
-        try {
-            ILabel postLabel = getElementFactory().getLabel(postSelector, "Post with ID");
-            return !postLabel.state().waitForDisplayed(Duration.ofSeconds(5));
-        } catch (NoSuchElementException | TimeoutException e) {
-            return true;
-        }
+        ILabel postLabel = getElementFactory().getLabel(postSelector, "Post with ID");
+        return !postLabel.state().waitForDisplayed(Duration.ofSeconds(5));
     }
 }
