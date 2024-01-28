@@ -65,7 +65,7 @@ public class VKApiUtils {
         return new PhotoWallResponse(server, photo, hash);
     }
 
-    public PhotoSaveRespnse savePhotoToWall(PhotoWallResponse PhotoWallResponse) {
+    public PhotoSaveResponse savePhotoToWall(PhotoWallResponse PhotoWallResponse) {
         Response savePhotoResponse = given()
                 .baseUri(API_BASE_URL)
                 .queryParam("access_token", ACCESS_TOKEN)
@@ -81,7 +81,7 @@ public class VKApiUtils {
 
         String photoId = savePhotoResponse.jsonPath().getString("response[0].id");
         String ownerId = savePhotoResponse.jsonPath().getString("response[0].owner_id");
-        return new PhotoSaveRespnse(photoId, ownerId);
+        return new PhotoSaveResponse(photoId, ownerId);
     }
 
     public PostResponse editPostWithPhoto(int postId, String newText, String attachment) {

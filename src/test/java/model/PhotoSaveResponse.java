@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class PhotoSaveRespnse {
+public class PhotoSaveResponse {
 
     private String photoId;
     private String ownerId;

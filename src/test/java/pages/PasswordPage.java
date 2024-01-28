@@ -18,4 +18,8 @@ public class PasswordPage extends Form {
         TEXT_BOX_PASSWORD.clearAndType(password);
         BUTTON_LOGIN.click();
     }
+
+    public boolean isPasswordEnteredCorrectly() {
+        return TEXT_BOX_PASSWORD.getValue().equals(TestUserConfig.getPassword());
+    }
 }

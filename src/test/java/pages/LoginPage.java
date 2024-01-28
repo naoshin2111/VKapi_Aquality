@@ -13,10 +13,14 @@ public class LoginPage extends Form {
         super(By.xpath("//div[@class=\"VkIdForm\"]"), "Login Page");
     }
 
-    public PasswordPage enterPhoneEmail() {
+    public PasswordPage enterPhone() {
         String login = TestUserConfig.getLogin();
         TXT_BOX_PHONE_EMAIL.clearAndType(login);
         CONTINUE_BUTTON.click();
         return new PasswordPage();
+    }
+
+    public boolean isPhoneNumberEnteredCorrectly() {
+        return TXT_BOX_PHONE_EMAIL.getValue().equals(TestUserConfig.getLogin());
     }
 }

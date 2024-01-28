@@ -5,7 +5,6 @@ import aquality.selenium.elements.interfaces.ILabel;
 import aquality.selenium.elements.interfaces.ILink;
 import aquality.selenium.forms.Form;
 import org.openqa.selenium.By;
-import java.time.Duration;
 
 public class MyProfilePage extends Form {
 
@@ -50,8 +49,8 @@ public class MyProfilePage extends Form {
         String showNextCommentXPath = String.format("//div[contains(@id, 'replies%s_%d')]//span[contains(@class, 'js-replies_next_label')]", ownerId, postId);
         By showNextCommentLocator = By.xpath(showNextCommentXPath);
         ILink showNextCommentButton = getElementFactory().getLink(showNextCommentLocator, "Show Next Comment");
-        showNextCommentButton.state().waitForDisplayed();
 
+        showNextCommentButton.state().waitForDisplayed();
         if (showNextCommentButton.state().isClickable()) {
             showNextCommentButton.click();
 
@@ -79,8 +78,8 @@ public class MyProfilePage extends Form {
     public boolean isPostDeleted(String ownerId, int postId) {
         String postXPath = String.format("//div[contains(@id, 'wpt%s_%d')]", ownerId, postId);
         By postSelector = By.xpath(postXPath);
-
         ILabel postLabel = getElementFactory().getLabel(postSelector, "Post with ID");
-        return !postLabel.state().waitForDisplayed(Duration.ofSeconds(5));
+
+        return postLabel.state().waitForNotDisplayed();
     }
 }
