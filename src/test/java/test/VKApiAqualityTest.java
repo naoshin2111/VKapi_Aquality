@@ -86,18 +86,16 @@ public class VKApiAqualityTest {
         myProfilePage.likePost(ownerId, postId);
 
         // Find user who likes the post
-//
-        LikeResponse likeResponse = apiUtils.getLikesForPost(ownerId, postId);
+        LikeCheckResponse likeCheckResponse = apiUtils.isLikedByOwner(ownerId, "post", postId);
+        Assert.assertEquals(likeCheckResponse.getLiked(), 1, "The owner did not like their own post.");
 
-        Assert.assertTrue(likeResponse.getUsers().contains(ownerId),
-                "The expected user did not like the post.");
-//        // Delete the post and assert deletion was successful
-//        DeleteResponse deleteResponse = apiUtils.deletePost(post.getPostId());
-//        Assert.assertTrue(deleteResponse.isDeleted(), "The post was not deleted.");
-//
-//        //Check whether the post is deleted through UI
-//        boolean isPostDeleted = myProfilePage.isPostDeleted(ownerId, postId);
-//        Assert.assertTrue(isPostDeleted, "The post was not deleted (still visible on the page).");
+        //Delete the post and assert deletion was successful
+        DeleteResponse deleteResponse = apiUtils.deletePost(post.getPostId());
+        Assert.assertTrue(deleteResponse.isDeleted(), "The post was not deleted.");
+
+        //Check whether the post is deleted through UI
+        boolean isPostDeleted = myProfilePage.isPostDeleted(ownerId, postId);
+        Assert.assertTrue(isPostDeleted, "The post was not deleted (still visible on the page).");
     }
 
 }

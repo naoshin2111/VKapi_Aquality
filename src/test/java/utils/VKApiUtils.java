@@ -5,9 +5,7 @@ import config.TestUserConfig;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import model.*;
-
 import java.io.File;
-import java.util.List;
 
 import static io.restassured.RestAssured.given;
 
@@ -126,26 +124,26 @@ public class VKApiUtils {
         return new Comment(commentId);
     }
 
-    public LikeResponse getLikesForPost(String ownerId, int postId) {
+    public LikeCheckResponse isLikedByOwner(String ownerId, String type, int itemId) {
         Response response = given()
                 .contentType(ContentType.JSON)
                 .baseUri(apiBaseUrl)
                 .queryParam("access_token", accessToken)
                 .queryParam("v", "5.131")
-                .queryParam("type", "post")
+                .queryParam("user_id", ownerId) // Assuming the owner has liked the post
+                .queryParam("type", type)
                 .queryParam("owner_id", ownerId)
-                .queryParam("item_id", postId)
-                .get("/likes.getList")
+                .queryParam("item_id", itemId)
+                .get("/likes.isLiked")
                 .then()
                 .statusCode(200)
                 .extract()
                 .response();
 
-        int count = response.jsonPath().getInt("response.count");
-        List<Integer> users = response.jsonPath().getList("response.users", Integer.class);
-        System.out.println(users);
+        int liked = response.jsonPath().getInt("response.liked");
+        int copied = response.jsonPath().getInt("response.copied");
 
-        return new LikeResponse(count, users);
+        return new LikeCheckResponse(liked, copied);
     }
 
     public DeleteResponse deletePost(int postId) {
