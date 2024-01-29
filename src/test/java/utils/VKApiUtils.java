@@ -1,28 +1,23 @@
 package utils;
-
-import config.ApiUrlConfig;
+import config.EnvironmentConfig;
 import config.TestUserConfig;
-import constant.EndPoints;
+import constant.Endpoints;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import lombok.experimental.UtilityClass;
 import model.*;
 import java.io.File;
 import static io.restassured.RestAssured.given;
 
-public class VKApiUtils {
+public class VKApiUtils extends BaseApiUtils{
 
-    private final String ACCESS_TOKEN = TestUserConfig.getToken();
-    private final String API_BASE_URL = ApiUrlConfig.getApiUrl();
+
 
     public PostResponse createPost(String message) {
-        Response response = given()
-                .contentType(ContentType.JSON)
-                .baseUri(API_BASE_URL)
-                .queryParam("access_token", ACCESS_TOKEN)
-                .queryParam("v", "5.131")
+        Response response = getBaseRequestSpecification()
                 .queryParam("message", message)
                 .when()
-                .post(EndPoints.WALL_POST)
+                .post(Endpoints.WALL_POST)
                 .then()
                 .statusCode(200)
                 .extract()
@@ -33,12 +28,8 @@ public class VKApiUtils {
     }
 
     public PhotoServerResponse uploadPhotoToServer() {
-        Response uploadServerResponse = given()
-                .contentType(ContentType.JSON)
-                .baseUri(API_BASE_URL)
-                .queryParam("access_token", ACCESS_TOKEN)
-                .queryParam("v", "5.131")
-                .get(EndPoints.PHOTOS_GET_WALL_UPLOAD_SERVER)
+        Response uploadServerResponse = getBaseRequestSpecification()
+                .get(Endpoints.PHOTOS_GET_WALL_UPLOAD_SERVER)
                 .then()
                 .statusCode(200)
                 .extract()
@@ -66,14 +57,11 @@ public class VKApiUtils {
     }
 
     public PhotoSaveResponse savePhotoToWall(PhotoWallResponse PhotoWallResponse) {
-        Response savePhotoResponse = given()
-                .baseUri(API_BASE_URL)
-                .queryParam("access_token", ACCESS_TOKEN)
-                .queryParam("v", "5.131")
+        Response savePhotoResponse = getBaseRequestSpecification()
                 .queryParam("server", PhotoWallResponse.getServer())
                 .queryParam("photo", PhotoWallResponse.getPhoto())
                 .queryParam("hash", PhotoWallResponse.getHash())
-                .post(EndPoints.PHOTOS_SAVE_WALL_PHOTO)
+                .post(Endpoints.PHOTOS_SAVE_WALL_PHOTO)
                 .then()
                 .statusCode(200)
                 .extract()
@@ -85,14 +73,11 @@ public class VKApiUtils {
     }
 
     public PostResponse editPostWithPhoto(int postId, String newText, String attachment) {
-        Response editPostResponse = given()
-                .baseUri(API_BASE_URL)
-                .queryParam("access_token", ACCESS_TOKEN)
-                .queryParam("v", "5.131")
+        Response editPostResponse = getBaseRequestSpecification()
                 .queryParam("post_id", postId)
                 .queryParam("message", newText)
                 .queryParam("attachments", attachment)
-                .post(EndPoints.WALL_EDIT)
+                .post(Endpoints.WALL_EDIT)
                 .then()
                 .statusCode(200)
                 .extract()
@@ -103,15 +88,11 @@ public class VKApiUtils {
     }
 
     public CommentResponse addCommentToPost(int postId, String message) {
-        Response response = given()
-                .contentType(ContentType.JSON)
-                .baseUri(API_BASE_URL)
-                .queryParam("access_token", ACCESS_TOKEN)
-                .queryParam("v", "5.131")
+        Response response = getBaseRequestSpecification()
                 .queryParam("post_id", postId)
                 .queryParam("message", message)
                 .when()
-                .post(EndPoints.WALL_CREATE_COMMENT)
+                .post(Endpoints.WALL_CREATE_COMMENT)
                 .then()
                 .statusCode(200)
                 .extract()
@@ -122,16 +103,12 @@ public class VKApiUtils {
     }
 
     public LikeResponse checkLikedByUser(String ownerId, String type, int itemId) {
-        Response response = given()
-                .contentType(ContentType.JSON)
-                .baseUri(API_BASE_URL)
-                .queryParam("access_token", ACCESS_TOKEN)
-                .queryParam("v", "5.131")
+        Response response = getBaseRequestSpecification()
                 .queryParam("user_id", ownerId)
                 .queryParam("type", type)
                 .queryParam("owner_id", ownerId)
                 .queryParam("item_id", itemId)
-                .get(EndPoints.LIKES_IS_LIKED)
+                .get(Endpoints.LIKES_IS_LIKED)
                 .then()
                 .statusCode(200)
                 .extract()
@@ -143,14 +120,10 @@ public class VKApiUtils {
     }
 
     public PostDeleteResponse deletePost(int postId) {
-        Response response = given()
-                .contentType(ContentType.JSON)
-                .baseUri(API_BASE_URL)
-                .queryParam("access_token", ACCESS_TOKEN)
-                .queryParam("v", "5.131")
+        Response response = getBaseRequestSpecification()
                 .queryParam("post_id", postId)
                 .when()
-                .post(EndPoints.WALL_DELETE)
+                .post(Endpoints.WALL_DELETE)
                 .then()
                 .statusCode(200)
                 .extract()

@@ -49,7 +49,7 @@ public class VKApiAqualityTest extends BaseTest{
         PhotoServerResponse PhotoServerResponse = apiUtils.uploadPhotoToServer();
 
         String imagePath = TestDataConfig.getImagePath();
-        PhotoWallResponse photoWallResponse = apiUtils.uploadPhotoToWall(imagePath, PhotoServerResponse.getUpload_url());
+        PhotoWallResponse photoWallResponse = apiUtils.uploadPhotoToWall(imagePath, PhotoServerResponse.getUploadUrl());
         Assert.assertNotNull(photoWallResponse, "Failed to upload photo to the wall.");
         Assert.assertFalse(photoWallResponse.getPhoto().isEmpty(), "Photo string is empty after uploading to the wall.");
 

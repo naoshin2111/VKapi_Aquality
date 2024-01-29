@@ -7,5 +7,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class PhotoServerResponse {
 
-    private String upload_url;
+    private String uploadUrl;
 }

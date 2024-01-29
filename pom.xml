@@ -16,13 +16,11 @@
 
     <dependencies>
 
-        <!-- https://mvnrepository.com/artifact/com.github.aquality-automation/aquality-selenium -->
         <dependency>
             <groupId>com.github.aquality-automation</groupId>
             <artifactId>aquality-selenium</artifactId>
             <version>4.1.4</version>
         </dependency>
-
 
         <dependency>
             <groupId>org.testng</groupId>
@@ -42,12 +40,6 @@
             <artifactId>rest-assured</artifactId>
             <version>5.3.2</version>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.16.0</version>
         </dependency>
 
     </dependencies>

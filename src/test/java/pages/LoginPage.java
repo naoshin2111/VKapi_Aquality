@@ -6,7 +6,7 @@ import org.openqa.selenium.By;
 import config.TestUserConfig;
 
 public class LoginPage extends Form {
-    private final ITextBox TXT_BOX_PHONE_EMAIL = getElementFactory().getTextBox(By.name("login"), "Phone or Email");
+    private final ITextBox TXT_BOX_PHONE_EMAIL = getElementFactory().getTextBox(By.xpath("//input[@id='index_email']"), "Phone or Email");
     private final ITextBox CONTINUE_BUTTON = getElementFactory().getTextBox(By.cssSelector("button[type='submit'] span[class='FlatButton__in']"), "Continue Button");
 
     public LoginPage() {
