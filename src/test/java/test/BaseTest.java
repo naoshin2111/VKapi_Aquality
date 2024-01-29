@@ -8,7 +8,7 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.AfterMethod;
 import static aquality.selenium.browser.AqualityServices.getBrowser;
 
-public class BaseTest {
+public abstract class BaseTest {
 
     @BeforeSuite
     public void setupRestAssured() {

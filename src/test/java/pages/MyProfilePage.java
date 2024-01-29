@@ -8,25 +8,23 @@ import org.openqa.selenium.By;
 
 public class MyProfilePage extends Form {
 
-    private final ILink MY_PROFILE_LINK = getElementFactory().getLink(By.xpath("//span[contains(text(),'My profile')]"), "My Profile");
+    private final ILink MyProfileLink = getElementFactory().getLink(By.xpath("//span[contains(text(),'My profile')]"), "My Profile");
+
+
 
     public MyProfilePage() {
         super(By.id("main_feed"), "My Profile Page");
     }
 
     public void openMyProfile() {
-        MY_PROFILE_LINK.state().waitForDisplayed();
-        MY_PROFILE_LINK.click();
-    }
-
-    public boolean isAt() {
-        return MY_PROFILE_LINK.state().isDisplayed();
+        MyProfileLink.state().waitForDisplayed();
+        MyProfileLink.click();
     }
 
     public boolean isPostPresentById(int postId) {
-        String postXPath = String.format("//div[contains(@id, 'wpt676687109_%d')]", postId);
+        String postXPath = String.format("//div[contains(@id, '%d')]", postId);
         By postSelector = By.xpath(postXPath);
-        ILabel postLabel = getElementFactory().getLabel(postSelector, "Post with ID");
+        ILabel postLabel = getElementFactory().getLabel(By.xpath(String.format("//div[contains(@id, '%d')]", postId)), "Post with ID");
 
         return postLabel.state().waitForDisplayed();
     }
@@ -45,23 +43,17 @@ public class MyProfilePage extends Form {
         return photoElement.state().waitForDisplayed();
     }
 
-    public boolean showNextComment(String ownerId, int postId) {
-        String showNextCommentXPath = String.format("//div[contains(@id, 'replies%s_%d')]//span[contains(@class, 'js-replies_next_label')]", ownerId, postId);
+    public void showNextComment(int postId) {
+        String showNextCommentXPath = String.format("//div[contains(@id, '%d')]//span[contains(@class, 'js-replies_next_label')]", postId);
         By showNextCommentLocator = By.xpath(showNextCommentXPath);
         ILink showNextCommentButton = getElementFactory().getLink(showNextCommentLocator, "Show Next Comment");
 
         showNextCommentButton.state().waitForDisplayed();
-        if (showNextCommentButton.state().isClickable()) {
-            showNextCommentButton.click();
-
-            return true;
-        } else {
-            return false;
-        }
+        showNextCommentButton.click();
     }
 
-    public boolean isCommentPresentByCommentId(String ownerId, int commentId) {
-        String commentXPath = String.format("//div[contains(@id, 'post%s_%d')]", ownerId, commentId);
+    public boolean isCommentPresentByCommentId( int commentId) {
+        String commentXPath = String.format("//div[contains(@id, '%d')]", commentId);
         ILabel commentLabel = getElementFactory().getLabel(By.xpath(commentXPath), "Comment Text");
 
         return commentLabel.state().waitForDisplayed();

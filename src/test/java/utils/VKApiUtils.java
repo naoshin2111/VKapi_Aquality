@@ -1,16 +1,14 @@
 package utils;
-import config.EnvironmentConfig;
-import config.TestUserConfig;
+
 import constant.Endpoints;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import lombok.experimental.UtilityClass;
 import model.*;
+import org.apache.http.HttpStatus;
 import java.io.File;
+
 import static io.restassured.RestAssured.given;
 
 public class VKApiUtils extends BaseApiUtils{
-
 
 
     public PostResponse createPost(String message) {
@@ -19,7 +17,7 @@ public class VKApiUtils extends BaseApiUtils{
                 .when()
                 .post(Endpoints.WALL_POST)
                 .then()
-                .statusCode(200)
+                .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .response();
 
@@ -31,7 +29,7 @@ public class VKApiUtils extends BaseApiUtils{
         Response uploadServerResponse = getBaseRequestSpecification()
                 .get(Endpoints.PHOTOS_GET_WALL_UPLOAD_SERVER)
                 .then()
-                .statusCode(200)
+                .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .response();
 
@@ -45,7 +43,7 @@ public class VKApiUtils extends BaseApiUtils{
                 .when()
                 .post(uploadUrl)
                 .then()
-                .statusCode(200)
+                .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .response();
 
@@ -63,7 +61,7 @@ public class VKApiUtils extends BaseApiUtils{
                 .queryParam("hash", PhotoWallResponse.getHash())
                 .post(Endpoints.PHOTOS_SAVE_WALL_PHOTO)
                 .then()
-                .statusCode(200)
+                .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .response();
 
@@ -79,7 +77,7 @@ public class VKApiUtils extends BaseApiUtils{
                 .queryParam("attachments", attachment)
                 .post(Endpoints.WALL_EDIT)
                 .then()
-                .statusCode(200)
+                .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .response();
 
@@ -94,7 +92,7 @@ public class VKApiUtils extends BaseApiUtils{
                 .when()
                 .post(Endpoints.WALL_CREATE_COMMENT)
                 .then()
-                .statusCode(200)
+                .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .response();
 
@@ -110,7 +108,7 @@ public class VKApiUtils extends BaseApiUtils{
                 .queryParam("item_id", itemId)
                 .get(Endpoints.LIKES_IS_LIKED)
                 .then()
-                .statusCode(200)
+                .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .response();
 
@@ -125,7 +123,7 @@ public class VKApiUtils extends BaseApiUtils{
                 .when()
                 .post(Endpoints.WALL_DELETE)
                 .then()
-                .statusCode(200)
+                .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .response();
 

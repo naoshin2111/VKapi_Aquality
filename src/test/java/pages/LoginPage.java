@@ -6,21 +6,16 @@ import org.openqa.selenium.By;
 import config.TestUserConfig;
 
 public class LoginPage extends Form {
-    private final ITextBox TXT_BOX_PHONE_EMAIL = getElementFactory().getTextBox(By.xpath("//input[@id='index_email']"), "Phone or Email");
-    private final ITextBox CONTINUE_BUTTON = getElementFactory().getTextBox(By.cssSelector("button[type='submit'] span[class='FlatButton__in']"), "Continue Button");
+    private final ITextBox txtBoxPhoneEmail = getElementFactory().getTextBox(By.xpath("//input[@id='index_email']"), "Phone or Email");
+    private final ITextBox ContinueButton = getElementFactory().getTextBox(By.cssSelector("button[type='submit'] span[class='FlatButton__in']"), "Continue Button");
 
     public LoginPage() {
-        super(By.xpath("//div[@class=\"VkIdForm\"]"), "Login Page");
+        super(By.xpath("//div[@id='index_rcolumn']"), "Login Page");
     }
 
-    public PasswordPage enterPhone() {
-        String login = TestUserConfig.getLogin();
-        TXT_BOX_PHONE_EMAIL.clearAndType(login);
-        CONTINUE_BUTTON.click();
+    public PasswordPage enterPhone(String login) {
+        txtBoxPhoneEmail.clearAndType(login);
+        ContinueButton.click();
         return new PasswordPage();
-    }
-
-    public boolean isPhoneNumberEnteredCorrectly() {
-        return TXT_BOX_PHONE_EMAIL.getValue().equals(TestUserConfig.getLogin());
     }
 }

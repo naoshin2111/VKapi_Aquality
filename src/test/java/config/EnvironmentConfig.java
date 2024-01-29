@@ -16,4 +16,8 @@ public class EnvironmentConfig {
     public static String getApiUrl() {
         return SETTINGS_FILE.getValue("/apiUrl").toString();
     }
+
+    public static String getApiVersion() {
+        return SETTINGS_FILE.getValue("/vkAPIversion").toString();
+    }
 }

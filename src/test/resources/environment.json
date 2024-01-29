@@ -1,4 +1,5 @@
 {
   "url": "https://vk.com/",
-  "apiUrl": "https://api.vk.com/method"
+  "apiUrl": "https://api.vk.com/method",
+  "vkAPIversion" : "5.131"
 }

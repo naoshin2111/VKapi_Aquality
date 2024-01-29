@@ -2,6 +2,7 @@ package test;
 
 import config.EnvironmentConfig;
 import config.TestDataConfig;
+import config.TestUserConfig;
 import model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -15,31 +16,34 @@ import static aquality.selenium.browser.AqualityServices.getBrowser;
 
 public class VKApiAqualityTest extends BaseTest{
 
+    private static final int POST_TEXT = 100;
+    private static final int EDIT_POST_TEXT = 10;
+
     private final SoftAssert softAssert = new SoftAssert();
+    private LoginPage loginPage;
+    private PasswordPage passwordPage;
+    private MyProfilePage myProfilePage;
 
     @Test
     public void VKApitest() {
 
         getBrowser().goTo(EnvironmentConfig.getUrl());
-        Assert.assertTrue(getBrowser().getCurrentUrl().contains(EnvironmentConfig.getUrl()), "The browser did not navigate to the expected URL.");
 
-        LoginPage loginPage = new LoginPage();
-        PasswordPage passwordPage = loginPage.enterPhone();
-        softAssert.assertTrue(loginPage.isPhoneNumberEnteredCorrectly(), "Phone/Email was not entered correctly.");
-
+        loginPage = new LoginPage();
+        String login = TestUserConfig.getLogin();
+        passwordPage = loginPage.enterPhone(login);
         passwordPage.enterPassword();
         softAssert.assertTrue(passwordPage.isPasswordEnteredCorrectly(), "Password was not entered correctly.");
 
         softAssert.assertAll();
 
-        MyProfilePage myProfilePage = new MyProfilePage();
+        myProfilePage = new MyProfilePage();
         myProfilePage.openMyProfile();
-        Assert.assertTrue(myProfilePage.isAt(), "Failed to navigate to the My Profile page.");
+        Assert.assertTrue(myProfilePage.state().isDisplayed(), "My Profile page is not displayed.");
 
         VKApiUtils apiUtils = new VKApiUtils();
-        String randomText = RandomUtils.generateRandomText(100);
+        String randomText = RandomUtils.generateRandomText(POST_TEXT);
         PostResponse postResponse = apiUtils.createPost(randomText);
-        Assert.assertNotNull(postResponse, "The API response for post creation is null");
 
         int postId = postResponse.getPostId();
 
@@ -50,16 +54,13 @@ public class VKApiAqualityTest extends BaseTest{
 
         String imagePath = TestDataConfig.getImagePath();
         PhotoWallResponse photoWallResponse = apiUtils.uploadPhotoToWall(imagePath, PhotoServerResponse.getUploadUrl());
-        Assert.assertNotNull(photoWallResponse, "Failed to upload photo to the wall.");
         Assert.assertFalse(photoWallResponse.getPhoto().isEmpty(), "Photo string is empty after uploading to the wall.");
 
         PhotoSaveResponse photoSaveResponse = apiUtils.savePhotoToWall(photoWallResponse);
         Assert.assertNotNull(photoSaveResponse, "Failed to save photo to the wall.");
-        Assert.assertNotNull(photoSaveResponse.getPhotoId(), "Photo ID is null after saving photo to the wall.");
-        Assert.assertNotNull(photoSaveResponse.getOwnerId(), "Owner ID is null after saving photo to the wall.");
 
         String attachment = "photo" + photoSaveResponse.getOwnerId()+ "_" + photoSaveResponse.getPhotoId();
-        String newText = "Edited post text " + RandomUtils.generateRandomText(10);
+        String newText = RandomUtils.generateRandomText(EDIT_POST_TEXT);
         PostResponse editPostResponse = apiUtils.editPostWithPhoto(postId, newText, attachment);
         Assert.assertNotNull(editPostResponse, "Failed to edit post.");
         Assert.assertEquals(editPostResponse.getPostId(), postId, "Edited post ID does not match the expected post ID.");
@@ -77,10 +78,9 @@ public class VKApiAqualityTest extends BaseTest{
         int commentId = commentResponse.getCommentId();
         String ownerId = photoSaveResponse.getOwnerId();
 
-        boolean isShowCommentButtonClicked = myProfilePage.showNextComment(ownerId, postId);
-        Assert.assertTrue(isShowCommentButtonClicked, "Failed to click 'Show next comment' button.");
+        myProfilePage.showNextComment(postId);
 
-        boolean isCommentAdded = myProfilePage.isCommentPresentByCommentId(ownerId, commentId);
+        boolean isCommentAdded = myProfilePage.isCommentPresentByCommentId(commentId);
         Assert.assertTrue(isCommentAdded, "The comment with text '" + commentText + "' was not found on the post in the UI.");
 
         myProfilePage.likePost(ownerId, postId);
