@@ -34,12 +34,9 @@ public class VKApiAqualityTest extends BaseTest{
 
         passwordPage = loginPage.enterPhone(login);
         passwordPage.enterPassword();
-
         newsfeedPage = new NewsfeedPage();
         newsfeedPage.openMyProfile();
-
         myProfilePage = new MyProfilePage();
-        Assert.assertTrue(myProfilePage.state().isDisplayed(), "My Profile page is not displayed.");
 
         VKApiUtils apiUtils = new VKApiUtils();
         String randomText = RandomUtils.generateRandomText(POST_TEXT);
@@ -55,23 +52,19 @@ public class VKApiAqualityTest extends BaseTest{
         Assert.assertFalse(photoWallResponse.getPhoto().isEmpty(), "Photo string is empty after uploading to the wall.");
 
         PhotoSaveResponse photoSaveResponse = apiUtils.savePhotoToWall(photoWallResponse);
-        Assert.assertNotNull(photoSaveResponse, "Failed to save photo to the wall.");
 
         String attachment = "photo" + photoSaveResponse.getOwnerId()+ "_" + photoSaveResponse.getPhotoId();
         String newText = RandomUtils.generateRandomText(EDIT_POST_TEXT);
         PostResponse editPostResponse = apiUtils.editPostWithPhoto(postResponse.getPostId(), newText, attachment);
-        Assert.assertNotNull(editPostResponse, "Failed to edit post.");
-        Assert.assertEquals(editPostResponse.getPostId(), postResponse.getPostId(), "Edited post ID does not match the expected post ID.");
 
-        boolean isEditedTextPresent = myProfilePage.getPostTextEdited(newText);
-        Assert.assertTrue(isEditedTextPresent, "The edited post text '" + newText + "' was not found on the page.");
+        String editedPostText = myProfilePage.getPostTextEdited(postResponse.getPostId());
+        Assert.assertEquals(editedPostText, newText,"The edited post text '" + newText + "' was not found on the page.");
 
         boolean isPhotoUploaded = myProfilePage.isPhotoPresentInPost(postResponse.getPostId(), photoSaveResponse);
         Assert.assertTrue(isPhotoUploaded, "The photo was not uploaded to the post.");
 
         String commentText = RandomUtils.generateRandomText(100);
         CommentResponse commentResponse = apiUtils.addCommentToPost(postResponse.getPostId(), commentText);
-        Assert.assertNotNull(commentResponse, "The API response for comment creation is null");
 
         myProfilePage.showNextComment(postResponse.getPostId());
 

@@ -10,7 +10,7 @@ import org.openqa.selenium.By;
 public class MyProfilePage extends Form {
 
     private static final String POST_X_PATH = "//div[contains(@id, '%d')]";
-    private static final String POST_TEXT_X_PATH = "//div[contains(text(), '%s')]";
+    private static final String POST_TEXT_X_PATH = "//div[contains(@id, '%d')]//div[@class='wall_text']";
     private static final String PHOTO_X_PATH = "//div[contains(@id,'wpt%s_%d')]//a[contains(@href,'%s')]";
     private static final String SHOW_NEXT_COMMENT_X_PATH = "//div[contains(@id, '%d')]//span[contains(@class, 'js-replies_next_label')]";
     private static final String COMMENT_X_PATH = "//div[contains(@id, '%d')]";
@@ -26,9 +26,11 @@ public class MyProfilePage extends Form {
         return postLabel.state().waitForDisplayed();
     }
 
-    public boolean getPostTextEdited(String editedText) {
-        ILabel postTextLabel = getElementFactory().getLabel(By.xpath(String.format(POST_TEXT_X_PATH, editedText)), "Post Text");
-        return postTextLabel.state().waitForDisplayed();
+    public String getPostTextEdited(int postId) {
+        ILabel postTextLabel = getElementFactory().getLabel(By.xpath(String.format(POST_TEXT_X_PATH, postId)), "Post Text");
+        System.out.println(postTextLabel.getText());
+        postTextLabel.state().waitForDisplayed();
+        return postTextLabel.getText();
     }
 
     public boolean isPhotoPresentInPost(int postId, PhotoSaveResponse photoSaveResponse) {
