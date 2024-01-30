@@ -8,6 +8,7 @@ import lombok.experimental.UtilityClass;
 public class TestUserConfig {
 
     private static final ISettingsFile SETTINGS_FILE = new JsonSettingsFile("testUser.json");
+
     public static String getLogin() {
         return SETTINGS_FILE.getValue("/login").toString();
     }

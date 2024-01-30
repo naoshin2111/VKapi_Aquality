@@ -1,11 +1,17 @@
 package model;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class PhotoServerResponse {
 
+    @JsonProperty(value = "user_id")
+    private String userId;
+
+    @JsonProperty(value = "upload_url")
     private String uploadUrl;
+
+    @JsonProperty(value = "album_id")
+    private String albumId;
 }

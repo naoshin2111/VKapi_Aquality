@@ -1,11 +1,11 @@
 package model;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class PostResponse {
 
+    @JsonProperty(value = "post_id")
     private int postId;
 }

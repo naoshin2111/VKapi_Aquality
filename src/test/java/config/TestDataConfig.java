@@ -8,6 +8,7 @@ import lombok.experimental.UtilityClass;
 public class TestDataConfig {
 
     private static final ISettingsFile SETTINGS_FILE = new JsonSettingsFile("testData.json");
+
     public static String getImagePath() {
         return SETTINGS_FILE.getValue("/imagePath").toString();
     }

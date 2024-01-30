@@ -12,5 +12,4 @@ public class Endpoints {
     public static final String PHOTOS_GET_WALL_UPLOAD_SERVER = PHOTOS + "getWallUploadServer";
     public static final String PHOTOS_SAVE_WALL_PHOTO = PHOTOS + "saveWallPhoto";
     public static final String LIKES_IS_LIKED = LIKES + "isLiked";
-
 }
