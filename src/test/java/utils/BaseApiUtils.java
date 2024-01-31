@@ -2,7 +2,7 @@ package utils;
 
 import config.EnvironmentConfig;
 import config.TestUserConfig;
-import constant.Parameters;
+import constants.Parameters;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;

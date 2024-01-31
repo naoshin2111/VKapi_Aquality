@@ -1,13 +1,16 @@
 package utils;
 
-import constant.Endpoints;
-import constant.Parameters;
-import model.*;
+import constants.Endpoints;
+import constants.Parameters;
+import models.*;
 import org.apache.http.HttpStatus;
 import java.io.File;
 import static io.restassured.RestAssured.given;
 
-public class VKApiUtils extends BaseApiUtils {
+public class VkApiUtils extends BaseApiUtils {
+
+    private static final String RESPONSE = "response";
+    private static final String EMPTY_PATH = "";
 
     public PostResponse createPost(String message) {
         return getBaseRequestSpecification()
@@ -19,7 +22,7 @@ public class VKApiUtils extends BaseApiUtils {
                 .extract()
                 .response()
                 .jsonPath()
-                .getObject(Parameters.RESPONSE, PostResponse.class);
+                .getObject(RESPONSE, PostResponse.class);
     }
 
     public PhotoServerResponse uploadPhotoToServer() {
@@ -30,7 +33,7 @@ public class VKApiUtils extends BaseApiUtils {
                 .extract()
                 .response()
                 .jsonPath()
-                .getObject(Parameters.RESPONSE, PhotoServerResponse.class);
+                .getObject(RESPONSE, PhotoServerResponse.class);
     }
 
     public PhotoWallResponse uploadPhotoToWall(String imagePath, String uploadUrl) {
@@ -43,21 +46,21 @@ public class VKApiUtils extends BaseApiUtils {
                 .extract()
                 .response()
                 .jsonPath()
-                .getObject(Parameters.EMPTY_PATH, PhotoWallResponse.class);
+                .getObject(EMPTY_PATH, PhotoWallResponse.class);
     }
 
-    public PhotoSaveResponse savePhotoToWall(PhotoWallResponse PhotoWallResponse) {
-        return  getBaseRequestSpecification()
-                .queryParam(Parameters.SERVER, PhotoWallResponse.getServer())
-                .queryParam(Parameters.PHOTO, PhotoWallResponse.getPhoto())
-                .queryParam(Parameters.HASH, PhotoWallResponse.getHash())
+    public PhotoSaveResponse savePhotoToWall(PhotoWallResponse photoWallResponse) {
+        return getBaseRequestSpecification()
+                .queryParam(Parameters.SERVER, photoWallResponse.getServer())
+                .queryParam(Parameters.PHOTO, photoWallResponse.getPhoto())
+                .queryParam(Parameters.HASH, photoWallResponse.getHash())
                 .post(Endpoints.PHOTOS_SAVE_WALL_PHOTO)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .response()
                 .jsonPath()
-                .getList(Parameters.RESPONSE, PhotoSaveResponse.class)
+                .getList(RESPONSE, PhotoSaveResponse.class)
                 .get(0);
     }
 
@@ -72,7 +75,7 @@ public class VKApiUtils extends BaseApiUtils {
                 .extract()
                 .response()
                 .jsonPath()
-                .getObject(Parameters.RESPONSE, PostResponse.class);
+                .getObject(RESPONSE, PostResponse.class);
     }
 
     public CommentResponse addCommentToPost(int postId, String message) {
@@ -86,14 +89,13 @@ public class VKApiUtils extends BaseApiUtils {
                 .extract()
                 .response()
                 .jsonPath()
-                .getObject(Parameters.RESPONSE, CommentResponse.class);
+                .getObject(RESPONSE, CommentResponse.class);
     }
 
     public LikeResponse checkLikedByUser(String ownerId, String type, int itemId) {
         return getBaseRequestSpecification()
                 .queryParam(Parameters.USER_ID, ownerId)
                 .queryParam(Parameters.TYPE, type)
-                .queryParam(Parameters.OWNER_ID, ownerId)
                 .queryParam(Parameters.ITEM_ID, itemId)
                 .get(Endpoints.LIKES_IS_LIKED)
                 .then()
@@ -101,7 +103,7 @@ public class VKApiUtils extends BaseApiUtils {
                 .extract()
                 .response()
                 .jsonPath()
-                .getObject(Parameters.RESPONSE, LikeResponse.class);
+                .getObject(RESPONSE, LikeResponse.class);
     }
 
     public PostDeleteResponse deletePost(int postId) {
@@ -114,6 +116,6 @@ public class VKApiUtils extends BaseApiUtils {
                 .extract()
                 .response()
                 .jsonPath()
-                .getObject(Parameters.EMPTY_PATH, PostDeleteResponse.class);
+                .getObject(EMPTY_PATH, PostDeleteResponse.class);
     }
 }

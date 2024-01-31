@@ -6,14 +6,14 @@ import org.openqa.selenium.By;
 
 public class NewsfeedPage extends Form {
 
-    private final ILink MyProfileLink = getElementFactory().getLink(By.id("l_pr"), "My Profile");
+    private final LeftForm leftForm;
 
     public NewsfeedPage() {
         super(By.xpath("//div[@id='feed_rmenu']"), "News Feed Page");
+        leftForm = new LeftForm();
     }
 
-    public void openMyProfile() {
-        MyProfileLink.state().waitForDisplayed();
-        MyProfileLink.click();
+    public LeftForm getLeftForm(){
+        return leftForm;
     }
 }

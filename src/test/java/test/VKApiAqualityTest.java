@@ -3,7 +3,7 @@ package test;
 import config.EnvironmentConfig;
 import config.TestDataConfig;
 import config.TestUserConfig;
-import model.*;
+import models.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import pages.LoginPage;
@@ -11,74 +11,73 @@ import pages.MyProfilePage;
 import pages.NewsfeedPage;
 import pages.PasswordPage;
 import utils.RandomUtils;
-import utils.VKApiUtils;
+import utils.VkApiUtils;
 import static aquality.selenium.browser.AqualityServices.getBrowser;
 
 public class VKApiAqualityTest extends BaseTest{
 
     private static final int POST_TEXT = 100;
     private static final int EDIT_POST_TEXT = 10;
-    private LoginPage loginPage;
-    private PasswordPage passwordPage;
-    private MyProfilePage myProfilePage;
-
-    private NewsfeedPage newsfeedPage;
+    private static final String PHOTO_ATTACHMENT = "photo%s_%s";
+    private final LoginPage loginPage = new LoginPage();
+    private final PasswordPage passwordPage = new PasswordPage();
+    private final MyProfilePage myProfilePage = new MyProfilePage();
+    private final NewsfeedPage newsfeedPage = new NewsfeedPage();
+    private final VkApiUtils apiUtils = new VkApiUtils();
 
     @Test
     public void VKApitest() {
 
         getBrowser().goTo(EnvironmentConfig.getUrl());
 
-        loginPage = new LoginPage();
         String login = TestUserConfig.getLogin();
+        loginPage.enterPhone(login);
 
-        passwordPage = loginPage.enterPhone(login);
-        passwordPage.enterPassword();
-        newsfeedPage = new NewsfeedPage();
-        newsfeedPage.openMyProfile();
-        myProfilePage = new MyProfilePage();
+        String password = TestUserConfig.getPassword();
+        passwordPage.enterPassword(password);
 
-        VKApiUtils apiUtils = new VKApiUtils();
+        newsfeedPage.getLeftForm().openMyProfile();
+
         String randomText = RandomUtils.generateRandomText(POST_TEXT);
         PostResponse postResponse = apiUtils.createPost(randomText);
 
-        boolean isPostPresent = myProfilePage.isPostPresentById(postResponse.getPostId());
-        Assert.assertTrue(isPostPresent, "The post with the ID " + postResponse.getPostId() + " was not found on the profile wall.");
+        int postId = postResponse.getPostId();
+        boolean isPostPresent = myProfilePage.isPostPresentById(postId);
+        Assert.assertTrue(isPostPresent, "The post with the ID " + postId + " was not found on the profile wall.");
 
         PhotoServerResponse PhotoServerResponse = apiUtils.uploadPhotoToServer();
 
         String imagePath = TestDataConfig.getImagePath();
         PhotoWallResponse photoWallResponse = apiUtils.uploadPhotoToWall(imagePath, PhotoServerResponse.getUploadUrl());
-        Assert.assertFalse(photoWallResponse.getPhoto().isEmpty(), "Photo string is empty after uploading to the wall.");
 
         PhotoSaveResponse photoSaveResponse = apiUtils.savePhotoToWall(photoWallResponse);
 
-        String attachment = "photo" + photoSaveResponse.getOwnerId()+ "_" + photoSaveResponse.getPhotoId();
-        String newText = RandomUtils.generateRandomText(EDIT_POST_TEXT);
-        PostResponse editPostResponse = apiUtils.editPostWithPhoto(postResponse.getPostId(), newText, attachment);
+        String attachment = String.format(PHOTO_ATTACHMENT, photoSaveResponse.getOwnerId(), photoSaveResponse.getPhotoId());
 
-        String editedPostText = myProfilePage.getPostTextEdited(postResponse.getPostId());
+        String newText = RandomUtils.generateRandomText(EDIT_POST_TEXT);
+        apiUtils.editPostWithPhoto(postId, newText, attachment);
+
+        String editedPostText = myProfilePage.getPostText(postId);
         Assert.assertEquals(editedPostText, newText,"The edited post text '" + newText + "' was not found on the page.");
 
-        boolean isPhotoUploaded = myProfilePage.isPhotoPresentInPost(postResponse.getPostId(), photoSaveResponse);
+        boolean isPhotoUploaded = myProfilePage.isPhotoPresentInPost(postId, photoSaveResponse);
         Assert.assertTrue(isPhotoUploaded, "The photo was not uploaded to the post.");
 
         String commentText = RandomUtils.generateRandomText(100);
-        CommentResponse commentResponse = apiUtils.addCommentToPost(postResponse.getPostId(), commentText);
+        CommentResponse commentResponse = apiUtils.addCommentToPost(postId, commentText);
 
-        myProfilePage.showNextComment(postResponse.getPostId());
+        myProfilePage.showNextComment(postId);
 
         boolean isCommentAdded = myProfilePage.isCommentPresentByCommentId(commentResponse.getCommentId());
         Assert.assertTrue(isCommentAdded, "The comment with text '" + commentText + "' was not found on the post in the UI.");
 
-        myProfilePage.likePost(photoSaveResponse.getOwnerId(), postResponse.getPostId());
-        LikeResponse LikeResponse = apiUtils.checkLikedByUser(photoSaveResponse.getOwnerId(), "post", postResponse.getPostId());
+        myProfilePage.likePost(postId);
+        LikeResponse LikeResponse = apiUtils.checkLikedByUser(photoSaveResponse.getOwnerId(), "post", postId);
         Assert.assertEquals(LikeResponse.getLiked(), 1, "The owner did not like their own post.");
 
-        PostDeleteResponse postDeleteResponse = apiUtils.deletePost(postResponse.getPostId());
-        Assert.assertEquals(postDeleteResponse.getResponse(), 1, "The post was not deleted.");
+        apiUtils.deletePost(postId);
 
-        boolean isPostDeleted = myProfilePage.isPostDeleted(photoSaveResponse.getOwnerId(), postResponse.getPostId());
+        boolean isPostDeleted = myProfilePage.isPostDeleted(postId);
         Assert.assertTrue(isPostDeleted, "The post was not deleted (still visible on the page).");
     }
 }

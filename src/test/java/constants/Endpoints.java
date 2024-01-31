@@ -1,5 +1,8 @@
-package constant;
+package constants;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class Endpoints {
 
     private static final String WALL = "/wall.";
