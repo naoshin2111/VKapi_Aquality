@@ -2,7 +2,6 @@ package pages;
 
 import aquality.selenium.elements.interfaces.ITextBox;
 import aquality.selenium.forms.Form;
-import config.TestUserConfig;
 import org.openqa.selenium.By;
 
 public class PasswordPage extends Form {

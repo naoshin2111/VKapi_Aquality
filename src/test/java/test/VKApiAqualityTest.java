@@ -19,11 +19,11 @@ public class VKApiAqualityTest extends BaseTest{
     private static final int POST_TEXT = 100;
     private static final int EDIT_POST_TEXT = 10;
     private static final String PHOTO_ATTACHMENT = "photo%s_%s";
-    private final LoginPage loginPage = new LoginPage();
-    private final PasswordPage passwordPage = new PasswordPage();
-    private final MyProfilePage myProfilePage = new MyProfilePage();
-    private final NewsfeedPage newsfeedPage = new NewsfeedPage();
-    private final VkApiUtils apiUtils = new VkApiUtils();
+    private LoginPage loginPage;
+    private PasswordPage passwordPage;
+    private NewsfeedPage newsfeedPage;
+    private MyProfilePage myProfilePage;
+    private VkApiUtils apiUtils;
 
     @Test
     public void VKApitest() {
@@ -31,14 +31,19 @@ public class VKApiAqualityTest extends BaseTest{
         getBrowser().goTo(EnvironmentConfig.getUrl());
 
         String login = TestUserConfig.getLogin();
+        loginPage = new LoginPage();
         loginPage.enterPhone(login);
 
         String password = TestUserConfig.getPassword();
+        passwordPage = new PasswordPage();
         passwordPage.enterPassword(password);
 
+        newsfeedPage = new NewsfeedPage();
+        myProfilePage = new MyProfilePage();
         newsfeedPage.getLeftForm().openMyProfile();
 
         String randomText = RandomUtils.generateRandomText(POST_TEXT);
+        apiUtils = new VkApiUtils();
         PostResponse postResponse = apiUtils.createPost(randomText);
 
         int postId = postResponse.getPostId();

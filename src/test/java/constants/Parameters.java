@@ -15,6 +15,5 @@ public class Parameters {
     public static final String ATTACHMENTS = "attachments";
     public static final String USER_ID = "user_id";
     public static final String TYPE = "type";
-    public static final String OWNER_ID = "owner_id";
     public static final String ITEM_ID = "item_id";
 }
