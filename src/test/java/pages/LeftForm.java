@@ -3,7 +3,6 @@ package pages;
 import aquality.selenium.elements.interfaces.ILink;
 import aquality.selenium.forms.Form;
 import org.openqa.selenium.By;
-import static aquality.selenium.browser.AqualityServices.getElementFactory;
 
 public class LeftForm extends Form {
 
